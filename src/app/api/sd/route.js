@@ -11,7 +11,7 @@ const disperse_data = new mongoose.Schema({
 });
 
 export const smartdisperse_data =
-  mongoose.models.abc || mongoose.model("abc", disperse_data);
+  mongoose.models.tnx || mongoose.model("tnx", disperse_data);
 
 export async function GET() {
   let data = [];
