@@ -18,7 +18,6 @@ const FetchUser = () => {
       console.log("Response from API:", response);
 
       const usersData = response.result;
-      console.log(usersData);
       const names = usersData.map((user) =>
         user.name ? user.name.toLowerCase() : ""
       );
@@ -36,41 +35,21 @@ const FetchUser = () => {
     }
   };
 
-  // Function to handle changes in the name input field
-  const handleNameChange = (e) => {
-    const enteredName = e.target.value; // Convert entered name to lowercase
-    setName(enteredName);
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
 
-    // Find the index of the entered name in the allNames array (case-insensitive)
-    const index = allNames.findIndex((n) => n === enteredName);
-    console.log(index);
-    if (index !== -1) {
-      setAddress(allAddresses[index]);
-    }
-    //  else {
-    //   setAddress(); // Only reset the address if the name is not found
-    // }
+  const handleNameChange = (e) => {
+    const enteredName = e.target.value.toLowerCase();
+    setName(enteredName);
   };
 
-  // Function to handle changes in the address input field
   const handleAddressChange = (e) => {
-    const enteredAddress = e.target.value; // Convert entered address to lowercase
-
+    const enteredAddress = e.target.value.toLowerCase();
     setAddress(enteredAddress);
-
-    // Find the index of the entered address in the allAddresses array (case-insensitive)
-    const index = allAddresses.findIndex((a) => a === enteredAddress);
-    if (index !== -1) {
-      setName(allNames[index]);
-    }
-    // else {
-    //   setName(""); // Only reset the name if the address is not found
-    // }
   };
 
   const handleSubmit = async (e) => {
-    console.log(address);
-
     e.preventDefault();
     const userid = address;
     if (!name && !address) {
@@ -87,7 +66,6 @@ const FetchUser = () => {
       address: raddress,
     };
     try {
-      console.log("entering try block for post method");
       let result = await fetch(`http://localhost:3000/api/sd`, {
         method: "POST",
         body: JSON.stringify(post_user_data),
@@ -98,22 +76,16 @@ const FetchUser = () => {
       if (result.success) {
         alert("Added to MongoDB");
         setName("");
-        setAddress("   ");
+        setAddress("");
       }
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-  useEffect(() => {
-    fetchUserDetails();
-  }, [name]);
-
-  // Function to handle creating a new JSON object
   const handleNewUser = () => {
     const newUser = { name, raddress, amount };
     console.log("New User Data:", newUser);
-    // You can perform further actions with the new user data, such as sending it to the server
   };
 
   return (
@@ -130,8 +102,16 @@ const FetchUser = () => {
             value={name}
             onChange={handleNameChange}
             className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+            list="name-suggestions" // Connect the input to the datalist
             required
           />
+          <datalist id="name-suggestions">
+            {" "}
+            {/* Define the datalist */}
+            {allNames.map((suggestion, index) => (
+              <option key={index} value={suggestion} />
+            ))}
+          </datalist>
         </div>
         <div className="mb-4">
           <label
