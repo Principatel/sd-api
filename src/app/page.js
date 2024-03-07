@@ -6,12 +6,17 @@ export default async function Home() {
       Main page
       <h1 className="text-center">
         <Link className="text-2xl " href="/userdata">
-          User Input Form page
+          user add and update
         </Link>
       </h1>
       <h1 className="text-center m-5">
         <Link className="text-2xl " href="/fetchuser">
-          Fetch User form page
+          Listify
+        </Link>
+      </h1>
+      <h1 className="text-center m-5">
+        <Link className="text-2xl " href="/textify">
+          Textify
         </Link>
       </h1>
     </main>

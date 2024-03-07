@@ -1,5 +1,4 @@
 "use client";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -63,7 +62,6 @@ export default function Page() {
 
   return (
     <div className="text-center">
-      <ConnectButton />
       <div className="text-3xl my-20">User Data Form</div>
       <div className="flex flex-col items-center">
         <input
