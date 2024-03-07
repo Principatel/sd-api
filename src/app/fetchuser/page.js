@@ -11,15 +11,24 @@ const FetchUser = () => {
   const [allNames, setAllNames] = useState([]);
   const [allAddresses, setAllAddresses] = useState([]);
 
-  // Function to fetch user details and store names and addresses in state
   const fetchUserDetails = async () => {
     try {
       const result = await fetch(`http://localhost:3000/api/sd`);
       const response = await result.json();
       console.log("Response from API:", response);
+
       const usersData = response.result;
-      const names = usersData.map((user) => user.name.toLowerCase());
-      const addresses = usersData.map((user) => user.raddress.toLowerCase());
+      console.log(usersData);
+      const names = usersData.map((user) =>
+        user.name ? user.name.toLowerCase() : ""
+      );
+      const addresses = usersData.map((user) =>
+        user.address ? user.address.toLowerCase() : ""
+      );
+
+      console.log("Names:", names);
+      console.log("Addresses:", addresses);
+
       setAllNames(names);
       setAllAddresses(addresses);
     } catch (error) {
@@ -27,36 +36,36 @@ const FetchUser = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUserDetails();
-  }, []);
-
   // Function to handle changes in the name input field
   const handleNameChange = (e) => {
-    const enteredName = e.target.value.toLowerCase(); // Convert entered name to lowercase
+    const enteredName = e.target.value; // Convert entered name to lowercase
     setName(enteredName);
 
     // Find the index of the entered name in the allNames array (case-insensitive)
     const index = allNames.findIndex((n) => n === enteredName);
+    console.log(index);
     if (index !== -1) {
       setAddress(allAddresses[index]);
-    } else {
-      setAddress(""); // Only reset the address if the name is not found
     }
+    //  else {
+    //   setAddress(); // Only reset the address if the name is not found
+    // }
   };
 
   // Function to handle changes in the address input field
   const handleAddressChange = (e) => {
-    const enteredAddress = e.target.value.toLowerCase(); // Convert entered address to lowercase
+    const enteredAddress = e.target.value; // Convert entered address to lowercase
+
     setAddress(enteredAddress);
 
     // Find the index of the entered address in the allAddresses array (case-insensitive)
     const index = allAddresses.findIndex((a) => a === enteredAddress);
     if (index !== -1) {
       setName(allNames[index]);
-    } else {
-      setName(name); // Only reset the name if the address is not found
     }
+    // else {
+    //   setName(""); // Only reset the name if the address is not found
+    // }
   };
 
   const handleSubmit = async (e) => {
@@ -89,12 +98,16 @@ const FetchUser = () => {
       if (result.success) {
         alert("Added to MongoDB");
         setName("");
-        setAddress("");
+        setAddress("   ");
       }
     } catch (error) {
       console.error("Error:", error);
     }
   };
+
+  useEffect(() => {
+    fetchUserDetails();
+  }, [name]);
 
   // Function to handle creating a new JSON object
   const handleNewUser = () => {
