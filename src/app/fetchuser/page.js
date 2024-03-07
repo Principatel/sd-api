@@ -39,16 +39,33 @@ const FetchUser = () => {
     fetchUserDetails();
   }, []);
 
+  // Function to handle changes in the name input field
   const handleNameChange = (e) => {
-    const enteredName = e.target.value.toLowerCase();
+    const enteredName = e.target.value.toLowerCase(); // Convert entered name to lowercase
     setName(enteredName);
+
+    // Find the index of the entered name in the allNames array (case-insensitive)
+    const index = allNames.findIndex((n) => n === enteredName);
+    if (index !== -1) {
+      setAddress(allAddresses[index]);
+    } else {
+      setAddress(""); // Only reset the address if the name is not found
+    }
   };
 
+  // Function to handle changes in the address input field
   const handleAddressChange = (e) => {
-    const enteredAddress = e.target.value.toLowerCase();
+    const enteredAddress = e.target.value.toLowerCase(); // Convert entered address to lowercase
     setAddress(enteredAddress);
-  };
 
+    // Find the index of the entered address in the allAddresses array (case-insensitive)
+    const index = allAddresses.findIndex((a) => a === enteredAddress);
+    if (index !== -1) {
+      setName(allNames[index]);
+    } else {
+      setName(name); // Only reset the name if the address is not found
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userid = address;
