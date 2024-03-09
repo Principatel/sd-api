@@ -41,27 +41,33 @@ function Page() {
   };
 
   // to map data in table
-  const parseText = () => {
-    const lines = textValue.split("\n");
-    const newData = lines.map((line, index) => {
-      const [address, amount] = line.split(/[,= \t]+/);
-      return {
-        id: index,
-        label: matchname,
-        address: address,
-        amount: parseFloat(amount) || 0,
-      };
-    });
-    setTableData(newData);
-  };
+  // const parseText = () => {
+  //   const lines = textValue.split("\n");
+  //   const newData = lines.map((line, index) => {
+  //     const [address, amount, name] = line.split(/[,= \t]+/);
+  //     console.log("address: ", address, "amount: ", amount, "name:", name);
+  //     return {
+  //       id: index,
+  //       label: matchname || null,
+  //       address: address,
+  //       amount: parseFloat(amount) || 0,
+  //     };
+  //   });
+  //   setTableData(newData);
+  // };
 
   useEffect(() => {
-    parseText();
+    // parseText();
     handleNameSearch();
   }, [textValue]);
 
   // replace  @name --> its corresponding address in textarea
   const handleNameSearch = () => {
+    // const lines = textValue.split("\n");
+    // const newData = lines.map((line, index) => {
+    //   if (regex.exec(line) !== null) {
+    //   }
+    // });
     const regex = /@(\w+)/g;
     let match;
     let updatedTextValue = textValue; // Create a copy of the current textValue
@@ -76,9 +82,33 @@ function Page() {
         setMatchname(name);
         console.log(foundAddress);
         setMatchaddress(foundAddress);
-
-        // Replace the matched name with the corresponding address in the updated textValue
         updatedTextValue = updatedTextValue.replace(`@${name}`, foundAddress);
+        const lines = textValue.split("\n");
+        const newData = lines.map((line, index) => {
+          const [name, address, amount] = line.split(/[,= \t]+/);
+          console.log("name:", name, "address: ", address, "amount: ", amount);
+          return {
+            id: index,
+            label: matchname || null,
+            address: foundAddress,
+            amount: parseFloat(amount) || 0,
+          };
+        });
+        setTableData(newData);
+      } else {
+        console.log("else");
+        const lines = textValue.split("\n");
+        const newData = lines.map((line, index) => {
+          const [name, address, amount] = line.split(/[,= \t]+/);
+          console.log("address: ", address, "amount: ", amount, "name:", name);
+          return {
+            id: index,
+            label: name || null,
+            address: address,
+            amount: parseFloat(amount) || 0,
+          };
+        });
+        setTableData(newData);
       }
     }
 
@@ -130,9 +160,6 @@ function Page() {
             ))}
           </tbody>
         </table>
-      </div>
-      <div style={{ margin: "50px 200px" }}>
-        <button onClick={handleNameSearch}>Search Names</button>
       </div>
     </div>
   );
