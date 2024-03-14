@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
 
 function Page() {
   const [textValue, setTextValue] = useState("");
@@ -8,6 +9,7 @@ function Page() {
   const [tableData, setTableData] = useState([]);
   const [matchaddress, setMatchaddress] = useState("");
   const [matchname, setMatchname] = useState("");
+  const { address } = useAccount();
 
   useEffect(() => {
     fetchUserDetails();
@@ -62,12 +64,7 @@ function Page() {
   }, [textValue]);
 
   // replace  @name --> its corresponding address in textarea
-  const handleNameSearch = () => {
-    // const lines = textValue.split("\n");
-    // const newData = lines.map((line, index) => {
-    //   if (regex.exec(line) !== null) {
-    //   }
-    // });
+  const handleNameSearch = async () => {
     const regex = /@(\w+)/g;
     let match;
     let updatedTextValue = textValue; // Create a copy of the current textValue
@@ -76,17 +73,14 @@ function Page() {
       const name = match[1];
       const index = allNames.indexOf(name.toLowerCase());
       if (index !== -1) {
-        console.log(`Name: ${name}, Address: ${allAddresses[index]}`);
         const foundAddress = allAddresses[index];
-        console.log(name);
+        console.log(`Name: ${name}, Address: ${foundAddress}`);
         setMatchname(name);
-        console.log(foundAddress);
         setMatchaddress(foundAddress);
         updatedTextValue = updatedTextValue.replace(`@${name}`, foundAddress);
-        const lines = textValue.split("\n");
+        const lines = updatedTextValue.split("\n");
         const newData = lines.map((line, index) => {
           const [name, address, amount] = line.split(/[,= \t]+/);
-          console.log("name:", name, "address: ", address, "amount: ", amount);
           return {
             id: index,
             label: matchname || null,
@@ -96,23 +90,46 @@ function Page() {
         });
         setTableData(newData);
       } else {
-        console.log("else");
-        const lines = textValue.split("\n");
-        const newData = lines.map((line, index) => {
-          const [name, address, amount] = line.split(/[,= \t]+/);
-          console.log("address: ", address, "amount: ", amount, "name:", name);
-          return {
-            id: index,
-            label: name || null,
-            address: address,
-            amount: parseFloat(amount) || 0,
-          };
-        });
+        const lines = updatedTextValue.split("\n");
+        await Promise.all(
+          lines.map(async (line, index) => {
+            const [name, raddress, amount] = line.split(/[,= \t]+/);
+            const newAddress = name.slice(1);
+            console.log("Store this data in database:", {
+              userid: address,
+              name: newAddress,
+              address: raddress,
+            });
+            try {
+              let result = await fetch(`http://localhost:3000/api/sd`, {
+                method: "POST",
+                body: JSON.stringify({
+                  userid: address,
+                  name: newAddress,
+                  address: raddress,
+                }),
+              });
+              result = await result.json();
+              console.log("Result after submission:", result);
+              if (result.success) {
+                alert("Added to MongoDB");
+                setName("");
+                setAddress("");
+              }
+            } catch (error) {
+              console.error("Error:", error);
+            }
+            return {
+              id: index,
+              label: newAddress || null,
+              address: raddress,
+              amount: parseFloat(amount) || 0,
+            };
+          })
+        );
         setTableData(newData);
       }
     }
-
-    // Update the textValue state with the modified value
     setTextValue(updatedTextValue);
   };
 

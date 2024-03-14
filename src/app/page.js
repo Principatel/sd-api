@@ -19,6 +19,16 @@ export default async function Home() {
           Textify
         </Link>
       </h1>
+      <h1 className="text-center m-5">
+        <Link className="text-2xl " href="/allusers">
+          all users
+        </Link>
+      </h1>
+      <h1 className="text-center m-5">
+        <Link className="text-2xl " href="/upload">
+          uploadify
+        </Link>
+      </h1>
     </main>
   );
 }
