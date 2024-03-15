@@ -13,22 +13,29 @@ function Page() {
     fetchUserDetails();
   }, []);
 
-  // Fetching all users' data and addresses stored in the database
-  const fetchUserDetails = async () => {
-    try {
-      const result = await fetch(`http://localhost:3000/api/sd`);
-      const response = await result.json();
+ // Fetching all users' data and addresses stored in the database
+const fetchUserDetails = async () => {
+  try {
+    const result = await fetch(`http://localhost:3000/api/sd`);
+    const response = await result.json();
 
-      const usersData = response.result;
-      const addresses = usersData.map((user) =>
-        user.address ? user.address.toLowerCase() : ""
-      );
-      setAllUsersData(usersData);
-      setAllAddresses(addresses);
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
-  };
+    const usersData = response.result;
+    const addresses = usersData.map((user) =>
+      user.address ? user.address.toLowerCase() : ""
+    );
+    const allnames = usersData.map((user) => user.name); // Extracting all names
+        console.log("All names:",allnames);
+        console.log("All addresses:",addresses);
+    setAllUsersData(usersData);
+    setAllAddresses(addresses);
+ 
+    // Returning an object containing both arrays
+    return { allnames, addresses };
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+  }
+};
+
 
   const handleFileUpload = (data) => {
     setCsvData(data);
@@ -39,12 +46,34 @@ function Page() {
       checkMatchingAddresses();
     }
   }, [csvData]);
+  
+
+  // const checkMatchingAddresses = () => {
+  //   const eoaAddresses = csvData.map((row) =>
+  //     row[Object.keys(row)[0]] ? row[Object.keys(row)[0]].toLowerCase() : ""
+  //   );
+
+  //   const matchingNames = eoaAddresses.map((eoaAddress) => {
+  //     const user = allUsersData.find(
+  //       (userData) =>
+  //         userData.address && userData.address.toLowerCase() === eoaAddress
+  //     );
+  //     return user ? user.name : "No Name";
+  //   });
+
+  //   setCsvData((prevCsvData) =>
+  //     prevCsvData.map((row, rowIndex) => ({
+  //       ...row,
+  //       label: matchingNames[rowIndex],
+  //     }))
+  //   );
+  // };
 
   const checkMatchingAddresses = () => {
     const eoaAddresses = csvData.map((row) =>
       row[Object.keys(row)[0]] ? row[Object.keys(row)[0]].toLowerCase() : ""
     );
-
+  
     const matchingNames = eoaAddresses.map((eoaAddress) => {
       const user = allUsersData.find(
         (userData) =>
@@ -52,14 +81,16 @@ function Page() {
       );
       return user ? user.name : "No Name";
     });
-
+  
     setCsvData((prevCsvData) =>
       prevCsvData.map((row, rowIndex) => ({
         ...row,
-        label: matchingNames[rowIndex],
+        Label: matchingNames[rowIndex], // Change 'label' to 'Label'
       }))
     );
   };
+  
+  
 
   return (
     <div className="container mx-auto px-4 py-8">
